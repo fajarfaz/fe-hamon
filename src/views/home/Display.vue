@@ -1,20 +1,21 @@
 <template>
     <div>
-    <h1 class="font-bold">
-        Hardware Monitoring
-        {{hardwares}}
-    </h1>
-    <GrafikChartVue />
-</div>
+        <h1 class="font-bold">
+            Hardware Monitoring
+            {{ hardwares }}
+        </h1>
+        <GrafikChartVue />
+    </div>
 </template>
 <script>
 import axios from 'axios';
 import GrafikChartVue from '../../components/GrafikChart.vue';
 export default {
-    components: {GrafikChartVue},
-    data(){
-        return{
-            loading: true
+    components: { GrafikChartVue },
+    data() {
+        return {
+            loading: true,
+            hardwares: 'null'
         }
     },
     async mounted() {
