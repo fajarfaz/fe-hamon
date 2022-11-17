@@ -1,5 +1,5 @@
 <template>
-  <Line :chart-options="chartOptions" :chart-data="chartData" />
+  <Line class="h-[300px]" :height="['150']"  :chart-options="chartOptions" :chart-data="chartData" />
 
 </template>
 
@@ -31,19 +31,19 @@ export default {
   props: ['dataSet'],
   watch: {
     dataSet(val) {
-      console.log(val)
+      
       var dates = []
       var prices = []
       for (var n in val) {
         var d = new Date(val[n].created_at)
-        dates.push(d.toLocaleString('id-ID'))
+        dates.push(d.toLocaleDateString('id-ID'))
         prices.push(val[n].price)
       }
       this.chartData = {
         labels: dates,
         datasets: [
           {
-            label: val[0].hardware_id,
+            label: val[0].hardware.name,
             backgroundColor: '#f87979',
             data: prices
           }
@@ -60,7 +60,7 @@ export default {
           }
         }
       }
-      console.log(this.chartData)
+      // console.log(this.chartData)
 
 
     }
