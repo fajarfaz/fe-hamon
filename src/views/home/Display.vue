@@ -3,13 +3,14 @@
     <div>
         <h1 class="font-bold">
             Hardware Monitoring
-          
+
         </h1>
         <div class="flex items-center">
-          
-            <v-select :options="nameList" label="title" class="w-full"></v-select>
+            <v-select :options="nameList" label="title" class="w-full" :reduce="nameList => nameList.code"
+                v-model="selected" @input="changeChart('hi')"></v-select>
         </div>
-        <GrafikChartVue />
+
+        <GrafikChartVue v-bind:dataSet="data" />
     </div>
 </template>
 <script>
@@ -21,7 +22,29 @@ export default {
         return {
             loading: true,
             hardwares: 'null',
-            nameList: []
+            nameList: [],
+            selected: 'hi',
+            data: {}
+        }
+    },
+    // methods: {
+    //     changeChart(h) {
+    //         console.log(h)
+    //     }
+
+    // },
+    watch: {
+        async selected(val) {
+            
+            await axios.get('monitoring/'+val)
+                .then(response => (this.data = response.data))
+                .catch(error => {
+                    console.log(error)
+                    this.errored = true
+                })
+                .finally(() => { })
+
+             
         }
     },
     async mounted() {
@@ -33,15 +56,18 @@ export default {
             })
             .finally(() => {
                 this.loading = false
-                
-                for (var n in this.hardwares){
 
-                    this.nameList.push(
-                        this.hardwares[n].name
-                    )
+                for (var n in this.hardwares) {
+                    if (this.hardwares[n].name != 'Categories') {
+                        this.nameList.push({
+                            'code': this.hardwares[n].id_ori,
+                            'title': this.hardwares[n].name
+                        }
+                        )
+                    }
                 }
 
-                
+
             })
     },
 }

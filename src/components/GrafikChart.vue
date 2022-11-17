@@ -1,6 +1,6 @@
 <template>
-  <Line :chart-options="chartOptions" :chart-data="chartData" :chart-id="chartId" :dataset-id-key="datasetIdKey"
-    :plugins="plugins" :css-classes="cssClasses" :styles="styles" :width="width" :height="height" />
+  <Line :chart-options="chartOptions" :chart-data="chartData" />
+
 </template>
 
 <script>
@@ -28,45 +28,52 @@ ChartJS.register(Title,
 export default {
   name: 'BarChart',
   components: { Line },
-  props: {
-    chartId: {
-      type: String,
-      default: 'line-chart'
-    },
-    datasetIdKey: {
-      type: String,
-      default: 'label'
-    },
-    width: {
-      type: Number,
-      default: 400
-    },
-    height: {
-      type: Number,
-      default: 400
-    },
-    cssClasses: {
-      default: '',
-      type: String
-    },
-    styles: {
-      type: Object,
-      default: () => { }
-    },
-    plugins: {
-      type: Object,
-      default: () => { }
+  props: ['dataSet'],
+  watch: {
+    dataSet(val) {
+      console.log(val)
+      var dates = []
+      var prices = []
+      for (var n in val) {
+        var d = new Date(val[n].created_at)
+        dates.push(d.toLocaleString('id-ID'))
+        prices.push(val[n].price)
+      }
+      this.chartData = {
+        labels: dates,
+        datasets: [
+          {
+            label: val[0].hardware_id,
+            backgroundColor: '#f87979',
+            data: prices
+          }
+        ]
+      }
+      this.chartOptions = {
+        tooltips: {
+          callbacks: {
+            label: function (t, d) {
+              var xLabel = d.datasets[t.datasetIndex].label;
+              var yLabel = t.yLabel >= 1000 ? '$' + t.yLabel.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : '$' + t.yLabel;
+              return xLabel + ': ' + yLabel;
+            }
+          }
+        }
+      }
+      console.log(this.chartData)
+
+
     }
   },
   data() {
     return {
       chartData: {
-        labels: ['January', 'February', 'March', 'April', 'May', 'June', 'July'],
+        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agt', 'Sept', 'Oct', 'Nov', 'Des'],
         datasets: [
           {
             label: 'Data One',
             backgroundColor: '#f87979',
-            data: [40, 39, 10, 40, 39, 80, 40]
+            data: [40, 39, 10, 40, 39, 80, 40, 10, 40, 39, 80, 20]
           }
         ]
       },
