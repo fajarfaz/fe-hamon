@@ -1,6 +1,6 @@
 <template>
 
-  <div class="flex flex-col mt-16 ml-16 py-10 px-12">
+  <div class="flex flex-col py-10 px-12">
     <router-view v-slot="{ Component }">
       <transition name="fade">
         <component :is="Component" />
