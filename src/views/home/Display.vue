@@ -6,21 +6,24 @@
                 class="text-blue-400 font-bold">Mon</span>itoring
         </h1>
         <div class="flex flex-col space-y-2 mb-8">
-            <label class="font-semibold text-lg text-gray-500">We Have <span class="text-blue-500 font-semibold" v-if="loading.trend == false">{{trends.length}}</span> Fluctuating Hardware Price</label>
+            <label class="font-semibold text-lg text-gray-500">We Have <span class="text-blue-500 font-semibold"
+                    v-if="loading.trend == false">{{ trends.length }}</span> Fluctuating Hardware Price</label>
             <div class="flex items-center space-x-2 text-xs">
-                <div class="flex items-center space-x-2 text-gray-300 bg-gray-700 py-1.5 px-3 rounded-lg">
-                   <span class="h-2.5 w-2.5 rounded-full bg-green-400"></span>
-                   <label for=""> Harga Turun </label> 
-                   <label class="text-white"> {{downPrice.length}}</label> 
+                <div :class="uft ? 'bg-gray-500 text-gray-100 shadow-lg': 'text-gray-200 bg-gray-700'" class="flex items-center space-x-2 text-gray-200 bg-gray-700 py-1.5 px-3 rounded-lg hover:shadow-lg cursor-pointer duration-300 hover:bg-gray-600"
+                    @click="downPriceFilter()">
+                    <span class="h-2.5 w-2.5 rounded-full bg-green-400"></span>
+                    <label for=""> Harga Turun </label>
+                    <label class="text-white"> {{ downPrice.length }}</label>
                 </div>
-                <div class="flex items-center space-x-2 text-gray-300 bg-gray-700 py-1.5 px-3 rounded-lg">
-                   <span class="h-2.5 w-2.5 rounded-full bg-red-400"></span>
-                   <label for=""> Harga Naik </label> 
-                   <label class="text-white"> {{upPrice.length}}</label> 
+                <div :class="dft ? 'bg-gray-500 text-gray-100 shadow-lg': 'text-gray-200 bg-gray-700'" @click="upPriceFilter" class="flex items-center space-x-2 text-gray-300 bg-gray-700 py-1.5 px-3 rounded-lg">
+                    <span class="h-2.5 w-2.5 rounded-full bg-red-400"></span>
+                    <label for=""> Harga Naik </label>
+                    <label class="text-white"> {{ upPrice.length }}</label>
                 </div>
             </div>
             <div class="flex items-center space-x-4 py-4 overflow-x-auto">
-                <div class="flex flex-col space-y-2 shrink-0 border rounded-xl w-[200px] h-[250px] py-4"
+                <a :href="trend.info.link"
+                    class="flex flex-col hover:shadow-lg duration-300 cursor-pointer space-y-2 shrink-0 border rounded-xl w-[200px] h-[250px] py-4"
                     v-for="trend in trends">
                     <div class="flex items-center space-x-2 px-4">
                         <img src="" alt=""
@@ -28,10 +31,11 @@
                         <div class="flex flex-col space-y-1 text-xs items-center">
                             <label class="bg-green-100 text-center rounded-lg px-2 py-1 text-green-500"
                                 v-if="trend.percentage < 0">{{ trend.percentage }}%</label>
-                            <label class="bg-red-100 text-center rounded-lg px-2 py-1 text-red-500"
-                                v-else>{{ trend.percentage }}%</label>
-                            <label class="font-medium truncate"
-                                v-if="trend.range > 0">+{{ trend.range.toLocaleString() }}</label>
+                            <label class="bg-red-100 text-center rounded-lg px-2 py-1 text-red-500" v-else>{{
+                                    trend.percentage
+                            }}%</label>
+                            <label class="font-medium truncate" v-if="trend.range > 0">+{{ trend.range.toLocaleString()
+                            }}</label>
                             <label class="font-medium truncate" v-else>{{ trend.range.toLocaleString() }}</label>
                         </div>
                     </div>
@@ -43,18 +47,20 @@
                                 <label class="">New Price</label>
                                 <label class="">Rp. {{ trend.new_price.toLocaleString() }}</label>
                             </div>
-                            <div class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between">
+                            <div
+                                class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between text-[11px] text-gray-500">
                                 <label class="">Old Price</label>
                                 <label class="">Rp. {{ trend.old_price.toLocaleString() }}</label>
                             </div>
                         </div>
-                        <div class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between text-[11px] text-gray-400">
+                        <div
+                            class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between text-[11px] text-gray-400">
                             <label class="">Last Update</label>
-                            <label class="font-medium ">{{ trend.last_update}}</label>
+                            <label class="font-medium ">{{ trend.last_update }}</label>
                         </div>
 
                     </div>
-                </div>
+                </a>
             </div>
         </div>
 
@@ -84,15 +90,46 @@ export default {
             nameList: [],
             selected: 'hi',
             trends: null,
-            data: {}
+            data: {},
+            dpf: false,
+            upf: false,
         }
     },
-    // methods: {
-    //     changeChart(h) {
-    //         console.log(h)
-    //     }
+    methods: {
+        downPriceFilter() {
+            this.dft = !this.dft
+            this.uft = false
+            if (this.dft) {
+                if (Array.isArray(this._trends)) {
+                    var tes = this._trends.filter(item => {
+                        return item.percentage < 0
 
-    // },
+                    })
+                    this.trends = tes
+                }
+
+            }else{
+                this.trends = this._trends
+            }
+        },
+        upPriceFilter() {
+            this.uft = !this.uft
+            this.dft = false
+            if (this.uft) {
+                if (Array.isArray(this._trends)) {
+                    var tes = this._trends.filter(item => {
+                        return item.percentage > 0
+
+                    })
+                    this.trends = tes
+                }
+
+            }else{
+                this.trends = this._trends
+            }
+        }
+
+    },
     watch: {
         async selected(val) {
 
@@ -107,23 +144,23 @@ export default {
 
         }
     },
-    computed:{
-        downPrice(){
+    computed: {
+        downPrice() {
             var down = []
-            for(var f in this.trends){
-                if(this.trends[f].percentage < 0){
-                    down.push({'percent' : this.trends[f].percentage})
+            for (var f in this.trends) {
+                if (this.trends[f].percentage < 0) {
+                    down.push({ 'percent': this.trends[f].percentage })
                 }
-                
+
             }
             return down
         },
-        upPrice(){
+        upPrice() {
             var up = []
-            for(var f in this.trends){
-                if(this.trends[f].percentage > 0){
-                    up.push({'percent' : this.trends[f].percentage})
-                }   
+            for (var f in this.trends) {
+                if (this.trends[f].percentage > 0) {
+                    up.push({ 'percent': this.trends[f].percentage })
+                }
             }
             return up
         }
@@ -157,7 +194,7 @@ export default {
             })
             .finally(() => {
                 this.loading.trend = false
-
+                this._trends = this.trends
             })
     },
 }
