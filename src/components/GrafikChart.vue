@@ -1,5 +1,5 @@
 <template>
-  <Line class="h-[300px]" :height="['150']"  :chart-options="chartOptions" :chart-data="chartData" />
+  <Line class="h-[300px]" :height="height"  :chart-options="chartOptions" :chart-data="chartData" />
 
 </template>
 
@@ -67,6 +67,7 @@ export default {
   },
   data() {
     return {
+      height: 150,
       chartData: {
         labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Agt', 'Sept', 'Oct', 'Nov', 'Des'],
         datasets: [

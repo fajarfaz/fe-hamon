@@ -2,17 +2,57 @@
 <template>
     <div>
         <h1 class="font-bold text-4xl text-center text-gray-600 mb-20 uppercase tracking-widest">
-            <span class="text-blue-400 font-bold">Ha</span>rdware <span class="text-blue-400 font-bold">Mon</span>itoring
+            <span class="text-blue-400 font-bold">Ha</span>rdware <span
+                class="text-blue-400 font-bold">Mon</span>itoring
         </h1>
         <div class="flex flex-col space-y-2 mb-8">
-            <label class="font-semibold text-lg text-gray-500">Fluctuating Hardware Price</label>
-            <div class="flex items-center space-x-4">
-                <div class="border rounded-xl w-[260px] h-[260px] overflow-auto" v-for="n in 5">
-                    <img src="" alt="" class="bg-red-200 h-[120px] w-full bg-cover overflow-hidden">
-                    <div class="flex flex-col px-4 py-2">
-                        <label class="text-lg">Device Name</label>
-                        <label class="text-sm">New Price</label>
-                        <label class="text-xs text-green-500">Persentase naik/turun</label>
+            <label class="font-semibold text-lg text-gray-500">We Have <span class="text-blue-500 font-semibold" v-if="loading.trend == false">{{trends.length}}</span> Fluctuating Hardware Price</label>
+            <div class="flex items-center space-x-2 text-xs">
+                <div class="flex items-center space-x-2 text-gray-300 bg-gray-700 py-1.5 px-3 rounded-lg">
+                   <span class="h-2.5 w-2.5 rounded-full bg-green-400"></span>
+                   <label for=""> Harga Turun </label> 
+                   <label class="text-white"> {{downPrice.length}}</label> 
+                </div>
+                <div class="flex items-center space-x-2 text-gray-300 bg-gray-700 py-1.5 px-3 rounded-lg">
+                   <span class="h-2.5 w-2.5 rounded-full bg-red-400"></span>
+                   <label for=""> Harga Naik </label> 
+                   <label class="text-white"> {{upPrice.length}}</label> 
+                </div>
+            </div>
+            <div class="flex items-center space-x-4 py-4 overflow-x-auto">
+                <div class="flex flex-col space-y-2 shrink-0 border rounded-xl w-[200px] h-[250px] py-4"
+                    v-for="trend in trends">
+                    <div class="flex items-center space-x-2 px-4">
+                        <img src="" alt=""
+                            class="bg-red-200 h-[60px] w-[60px] mx-auto rounded-full bg-cover overflow-hidden">
+                        <div class="flex flex-col space-y-1 text-xs items-center">
+                            <label class="bg-green-100 text-center rounded-lg px-2 py-1 text-green-500"
+                                v-if="trend.percentage < 0">{{ trend.percentage }}%</label>
+                            <label class="bg-red-100 text-center rounded-lg px-2 py-1 text-red-500"
+                                v-else>{{ trend.percentage }}%</label>
+                            <label class="font-medium truncate"
+                                v-if="trend.range > 0">+{{ trend.range.toLocaleString() }}</label>
+                            <label class="font-medium truncate" v-else>{{ trend.range.toLocaleString() }}</label>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col px-4 pt-2 text-xs justify-between h-full">
+                        <div>
+                            <label class="text-sm">{{ trend.info.name }}</label>
+                            <div class="mt-2 bg-gray-100 py-1 px-4 -mx-4 flex items-center justify-between">
+                                <label class="">New Price</label>
+                                <label class="">Rp. {{ trend.new_price.toLocaleString() }}</label>
+                            </div>
+                            <div class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between">
+                                <label class="">Old Price</label>
+                                <label class="">Rp. {{ trend.old_price.toLocaleString() }}</label>
+                            </div>
+                        </div>
+                        <div class="bg-gray-00 py-1 px-4 -mx-4 flex items-center justify-between text-[11px] text-gray-400">
+                            <label class="">Last Update</label>
+                            <label class="font-medium ">{{ trend.last_update}}</label>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -36,10 +76,14 @@ export default {
     components: { GrafikChartVue },
     data() {
         return {
-            loading: true,
-            hardwares: 'null',
+            loading: {
+                trend: true,
+                hardware: true
+            },
+            hardwares: null,
             nameList: [],
             selected: 'hi',
+            trends: null,
             data: {}
         }
     },
@@ -63,6 +107,27 @@ export default {
 
         }
     },
+    computed:{
+        downPrice(){
+            var down = []
+            for(var f in this.trends){
+                if(this.trends[f].percentage < 0){
+                    down.push({'percent' : this.trends[f].percentage})
+                }
+                
+            }
+            return down
+        },
+        upPrice(){
+            var up = []
+            for(var f in this.trends){
+                if(this.trends[f].percentage > 0){
+                    up.push({'percent' : this.trends[f].percentage})
+                }   
+            }
+            return up
+        }
+    },
     async mounted() {
         await axios.get('hardware')
             .then(response => (this.hardwares = response.data))
@@ -71,7 +136,7 @@ export default {
                 this.errored = true
             })
             .finally(() => {
-                this.loading = false
+                this.loading.hardware = false
 
                 for (var n in this.hardwares) {
                     if (this.hardwares[n].name != 'Categories') {
@@ -82,7 +147,16 @@ export default {
                         )
                     }
                 }
+            })
 
+        await axios.get('hardware/trend')
+            .then(response => (this.trends = response.data))
+            .catch(error => {
+                console.log(error)
+                this.errored = true
+            })
+            .finally(() => {
+                this.loading.trend = false
 
             })
     },
