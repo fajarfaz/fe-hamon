@@ -21,9 +21,9 @@
                     <label class="text-white"> {{ upPrice.length }}</label>
                 </div>
             </div>
-            <div class="flex items-center space-x-4 py-4 overflow-x-auto">
+            <div class="flex items-center space-x-4 py-4 overflow-x-auto overflow-y-hidden">
                 <a :href="trend.info.link"
-                    class="flex flex-col hover:shadow-lg duration-300 cursor-pointer space-y-2 shrink-0 border rounded-xl w-[200px] h-[250px] py-4"
+                    class="flex flex-col hover:shadow-lg duration-300 cursor-pointer space-y-2 shrink-0 border rounded-xl w-[200px] h-[300px] py-4"
                     v-for="trend in trends">
                     <div class="flex items-center space-x-2 px-4">
                         <img src="" alt=""
