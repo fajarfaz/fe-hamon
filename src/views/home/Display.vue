@@ -26,7 +26,7 @@
                     class="flex flex-col hover:shadow-lg duration-300 cursor-pointer space-y-2 shrink-0 border rounded-xl w-[200px] h-[300px] py-4"
                     v-for="trend in trends">
                     <div class="flex items-center space-x-2 px-4">
-                        <img src="" alt=""
+                        <img :src="trend.info.image ? trend.info.image[0] : '-' " alt=""
                             class="bg-red-200 h-[60px] w-[60px] mx-auto rounded-full bg-cover overflow-hidden">
                         <div class="flex flex-col space-y-1 text-xs items-center">
                             <label class="bg-green-100 text-center rounded-lg px-2 py-1 text-green-500"
@@ -41,8 +41,9 @@
                     </div>
 
                     <div class="flex flex-col px-4 pt-2 text-xs justify-between h-full">
-                        <div>
-                            <label class="text-sm">{{ trend.info.name }}</label>
+                        <div class="flex flex-col ">
+                            <text-clamp class="text-sm" :text="trend.info.name" :max-lines="2" />
+                            <label class="bg-gray-200 py-0.5 mx-auto mt-1 px-2 text-[11px] rounded-md w-max">{{trend.info.category}}</label>
                             <div class="mt-2 bg-gray-100 py-1 px-4 -mx-4 flex items-center justify-between">
                                 <label class="">New Price</label>
                                 <label class="">Rp. {{ trend.new_price.toLocaleString() }}</label>
@@ -91,8 +92,8 @@ export default {
             selected: 'hi',
             trends: null,
             data: {},
-            dpf: false,
-            upf: false,
+            uft: false,
+            dft: false
         }
     },
     methods: {
